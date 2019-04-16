@@ -25,3 +25,6 @@ hs_err_pid*
 !/trans-server/pom.xml
 !/trans-common/pom.xml
 !/trans-client/pom.xml
+/trans-client/target/
+/trans-server/target/
+/trans-common/target/
