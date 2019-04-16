@@ -1,8 +1,0 @@
-#mysql:
-#  binlog:
-#    switch: true
-
-trans:
-  netty:
-    ip: localhost
-    port: 8091
