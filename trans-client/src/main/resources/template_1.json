@@ -1,0 +1,36 @@
+{
+  "listenerConfig":[{
+    "dbConnectionName": "could",
+    "databaseList":[{
+      "databaseName": "advertisement",
+      "tableList": [{
+        "tableName": "ad_plan",
+        "op":[{
+          "opType":"insert",
+          "opFiled":[
+            {"column": "id"},
+            {"column": "user_id"},
+            {"column": "plan_status"},
+            {"column": "start_date"},
+            {"column": "end_date"}
+          ]},
+          {
+            "opType":"update",
+            "opFiled": [
+              {"column": "id"},
+              {"column": "user_id"},
+              {"column": "plan_status"},
+              {"column": "start_date"},
+              {"column": "end_date"}
+            ]
+          },
+          {
+            "opType":"delete",
+            "opFiled": [
+              {"column": "id"}
+            ]
+          }]
+      }]
+    }]
+  }]
+}
