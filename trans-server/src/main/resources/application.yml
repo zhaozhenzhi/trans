@@ -7,7 +7,7 @@ trans:
     mysql:
       dataSource:
         could:
-          host: cdb-ahs4c0jv.gz.tencentcdb.com
-          port: 10050
-          username: root
-          password: dazhi-1993aini
+          host: xxxx
+          port: xxxx
+          username: xxxx
+          password: xxxx
