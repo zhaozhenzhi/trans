@@ -63,9 +63,9 @@
     ```
 3. 启动客户端
     ```js
-    Trans trans = new Trans("template.json");
+    Trans trans = new Trans("配置的json");
     try {
-        trans.start("127.0.0.1",8091);
+        trans.start("服务端地址",port);
     } catch (InterruptedException e) {
         e.printStackTrace();
     }
