@@ -1,7 +1,7 @@
 package cn.dazhiyy.trans.server.db.mysql.listener;
 
 import cn.dazhiyy.trans.common.bean.TransDbConn;
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import lombok.Data;
 
 /**
@@ -17,6 +17,6 @@ public class EventWrapper {
 
     private TransDbConn transDbConn;
 
-    private Channel channel;
+    private ChannelId channel;
 
 }

@@ -9,6 +9,7 @@ import cn.dazhiyy.trans.common.transport.DbDataWrapper;
 import cn.dazhiyy.trans.common.transport.DbListenerWrapper;
 import cn.dazhiyy.trans.common.transport.EventEnum;
 import cn.dazhiyy.trans.common.transport.TransportData;
+import cn.dazhiyy.trans.netty.context.TransNettyContext;
 import cn.dazhiyy.trans.server.db.mysql.AbstractDataForQueueHandler;
 import cn.dazhiyy.trans.server.db.mysql.MysqlBinlogClient;
 import cn.dazhiyy.trans.server.db.mysql.listener.EventWrapper;
@@ -22,6 +23,7 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +62,7 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
 
     @Override
     public void remove(EventWrapper eventWrapper) {
-        Channel channel = eventWrapper.getChannel();
+        ChannelId channel = eventWrapper.getChannel();
 
 
     }
@@ -73,7 +75,7 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
     private void registeredConn(EventWrapper eventWrapper) {
         TransDbConn transDbConn = eventWrapper.getTransDbConn();
         Map<String, TransDbBean> connAimMap = transDbConn.getConnMap();
-        Channel channel = eventWrapper.getChannel();
+        ChannelId channel = eventWrapper.getChannel();
         for (Map.Entry<String, TransDbBean> entry : connAimMap.entrySet()) {
             ListenerConn conn = connMap.get(entry.getKey());
             if (conn == null) {
@@ -95,7 +97,7 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
      * @param entry
      * @param conn
      */
-    private void registeredDb(Channel channel, Map.Entry<String, TransDbBean> entry, ListenerConn conn) {
+    private void registeredDb(ChannelId channel, Map.Entry<String, TransDbBean> entry, ListenerConn conn) {
         Map<String, ListenerDb> dbMap = conn.getMap();
         TransDbBean transDbBean = entry.getValue();
         Map<String, TransDb> transDbMap = transDbBean.getTransDbMap();
@@ -116,15 +118,15 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
      * @param dbEntry
      * @param listenerDb
      */
-    private void registeredTable(Map.Entry<String, TransDb> dbEntry, ListenerDb listenerDb,Channel channel) {
-        Map<String, List<Channel>> tableMap = listenerDb.getTableMap();
+    private void registeredTable(Map.Entry<String, TransDb> dbEntry, ListenerDb listenerDb,ChannelId channel) {
+        Map<String, List<ChannelId>> tableMap = listenerDb.getTableMap();
         TransDb transDb = dbEntry.getValue();
         Map<String, TransTable> transTableMap = transDb.getTransTableMap();
         for (Map.Entry<String, TransTable> tableEntry : transTableMap.entrySet()) {
-            List<Channel> channelList = tableMap.get(tableEntry.getKey());
-            Map<Channel, Map<String,ListenerTable>> channelMap = listenerDb.getChannelMap();
+            List<ChannelId> channelList = tableMap.get(tableEntry.getKey());
+            Map<ChannelId, Map<String,ListenerTable>> channelMap = listenerDb.getChannelMap();
             if (CollectionUtils.isEmpty(channelList)) {
-                List<Channel> channels = Lists.newArrayList();
+                List<ChannelId> channels = Lists.newArrayList();
                 channels.add(channel);
                 tableMap.put(tableEntry.getKey(),channels);
                 ListenerTable table = buildTable(tableEntry.getValue());
@@ -154,7 +156,7 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
      * @param channel
      * @return
      */
-    private ListenerConn buildListenerConn(TransDbBean transDbBean, Channel channel){
+    private ListenerConn buildListenerConn(TransDbBean transDbBean, ChannelId channel){
         if (transDbBean!=null) {
             ListenerConn conn = new ListenerConn();
             Map<String, ListenerDb> dbMap = conn.getMap();
@@ -176,20 +178,20 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
      * @param channel
      * @return
      */
-    private ListenerDb buildDb(TransDb transDb, Channel channel){
+    private ListenerDb buildDb(TransDb transDb, ChannelId channel){
         if (transDb != null) {
             ListenerDb listenerDb = new ListenerDb();
             listenerDb.setDbName(transDb.getDbName());
             Map<String, TransTable> transTableMap = transDb.getTransTableMap();
-            Map<Channel, Map<String,ListenerTable>> channelMap = listenerDb.getChannelMap();
+            Map<ChannelId, Map<String, ListenerTable>> channelMap = listenerDb.getChannelMap();
             Map<String,ListenerTable> tables = Maps.newConcurrentMap();
-            Map<String, List<Channel>> tableMap = listenerDb.getTableMap();
+            Map<String, List<ChannelId>> tableMap = listenerDb.getTableMap();
             for (Map.Entry<String, TransTable> entry : transTableMap.entrySet()) {
                 TransTable transTable = entry.getValue();
                 ListenerTable table = buildTable(transTable);
                 tables.put(entry.getKey(),table);
                 //绑定channel
-                List<Channel> channelList = Lists.newArrayList();
+                List<ChannelId> channelList = Lists.newArrayList();
                 channelList.add(channel);
                 tableMap.put(entry.getKey(),channelList);
             }
@@ -238,11 +240,11 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
         if (listenerConn!=null) {
             ListenerDb listenerDb = listenerConn.getMap().get(data.getDbName());
             if (listenerDb!=null) {
-                Map<String, List<Channel>> tableMap = listenerDb.getTableMap();
-                List<Channel> channels = tableMap.get(data.getTableName());
-                if (CollectionUtils.isNotEmpty(channels)){
-                    for (Channel channel : channels) {
-                        Map<String, ListenerTable> listenerTableMap = listenerDb.getChannelMap().get(channel);
+                Map<String, List<ChannelId>> tableMap = listenerDb.getTableMap();
+                List<ChannelId> channelIds = tableMap.get(data.getTableName());
+                if (CollectionUtils.isNotEmpty(channelIds)){
+                    for (ChannelId channelId : channelIds) {
+                        Map<String, ListenerTable> listenerTableMap = listenerDb.getChannelMap().get(channelId);
                         ListenerTable table = listenerTableMap.get(data.getTableName());
                         //拿出对应操作的字段
                         Map<OpType, List<String>> attrMap = table.getAttrMap();
@@ -290,7 +292,10 @@ public class MysqlListenerContext extends AbstractMysqlListenerContext {
                         TransportData transportData = new TransportData();
                         transportData.setEventCode(EventEnum.ACCEPT.getCode());
                         transportData.setData(wrapper);
-                        channel.writeAndFlush(JSON.toJSON(transportData)+"\r\n");
+                        Channel channel = TransNettyContext.findChannel(channelId);
+                        if (channel!=null) {
+                            channel.writeAndFlush(JSON.toJSON(transportData)+"\r\n");
+                        }
                     }
                 }
             }

@@ -3,10 +3,10 @@ package cn.dazhiyy.trans.netty;
 import cn.dazhiyy.trans.SocketServer;
 import cn.dazhiyy.trans.netty.config.TransNettyProperties;
 import cn.dazhiyy.trans.netty.context.TransNettyContext;
+import cn.dazhiyy.trans.netty.handler.AbstractTransNetHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -15,7 +15,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -34,11 +33,19 @@ public class NettySocketServer implements SocketServer {
     private EventLoopGroup boss;
     private EventLoopGroup worker;
 
-    public NettySocketServer(List<ChannelHandler> handlers){
-        init(handlers);
+    public NettySocketServer(List<AbstractTransNetHandler> handlers){
+
+        // 设置处理器
+        TransNettyContext.setHandlers(handlers);
+
+        // 初始化
+        init();
     }
 
-    private void init(List<ChannelHandler> handlers) {
+    /**
+     * 初始化服务
+     */
+    private void init() {
         this.boss = new NioEventLoopGroup();
         this.worker = new NioEventLoopGroup();
         this.server = new ServerBootstrap();
@@ -52,15 +59,17 @@ public class NettySocketServer implements SocketServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         //处理空闲状态事件的处理器
-                        TransNettyContext.getHandlers().forEach(channel -> ch.pipeline().addLast(channel));
-                        // 自定义处理器
-                        if (CollectionUtils.isNotEmpty(handlers)) {
-                            handlers.forEach(handler->ch.pipeline().addLast(handler));
-                        }
+                        TransNettyContext.setHandler(ch.pipeline());
                     }
                 });
+
     }
 
+    /**
+     * 获得日志级别
+     *
+     * @return 日志处理器
+     */
     private LoggingHandler getLogHandler(){
         String logLevel = TransNettyContext.nettyConfig.get(TransNettyProperties.NETTY_LOG);
 

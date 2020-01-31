@@ -1,7 +1,7 @@
 package cn.dazhiyy.trans.server.db.mysql.listener.index;
 
 import com.google.common.collect.Maps;
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import lombok.Data;
 
 import java.util.List;
@@ -22,10 +22,10 @@ public class ListenerDb {
     /**
      *
      */
-    private Map<Channel,Map<String,ListenerTable>> channelMap = Maps.newConcurrentMap();
+    private Map<ChannelId,Map<String,ListenerTable>> channelMap = Maps.newConcurrentMap();
 
     /**
      *  string-> 表名
      */
-    private Map<String, List<Channel>> tableMap = Maps.newConcurrentMap();
+    private Map<String, List<ChannelId>> tableMap = Maps.newConcurrentMap();
 }

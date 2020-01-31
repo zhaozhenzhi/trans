@@ -1,6 +1,6 @@
 package cn.dazhiyy.trans.server.transport.netty.route;
 
-import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 
 /**
  * @author dazhi
@@ -15,16 +15,16 @@ public interface MsgRouter {
     /**
      * 是否支持路由
      *
-     * @param eventData
+     * @param code
      * @return
      */
-    Boolean isSupport(String eventData);
+    Boolean isSupport(Integer code);
 
     /**
      * 路由处理
      *
      * @param msg
-     * @param channel
+     * @param channelId
      */
-    void route(String msg, Channel channel);
+    void route(String msg, ChannelId channelId);
 }
