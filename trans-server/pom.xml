@@ -16,6 +16,11 @@
             <groupId>cn.dazhiyy.middleware</groupId>
             <artifactId>trans-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.dazhiyy.middleware</groupId>
+            <artifactId>easy-trans-netty</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.lmax/disruptor -->
         <dependency>
             <groupId>com.lmax</groupId>

@@ -1,4 +1,4 @@
-package cn.dazhiyy.trans.server.transport;
+package cn.dazhiyy.trans;
 
 /**
  * @author dazhi
@@ -20,4 +20,6 @@ public interface SocketServer {
      * 关闭服务
      */
     void close();
+
+
 }
