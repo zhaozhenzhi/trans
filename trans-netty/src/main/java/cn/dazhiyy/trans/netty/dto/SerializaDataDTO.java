@@ -12,7 +12,7 @@ import lombok.Data;
  * @date 2020/1/31 22:19
  */
 @Data
-public class SerializaDataDTO extends TransportSerializaDTO {
+public class SerializaDataDTO extends TransportSendDTO {
 
     /** 管道的唯一标识 */
     private ChannelId channelId;

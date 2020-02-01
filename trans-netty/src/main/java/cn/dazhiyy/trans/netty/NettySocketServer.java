@@ -36,7 +36,7 @@ public class NettySocketServer implements SocketServer {
     public NettySocketServer(List<AbstractTransNetHandler> handlers){
 
         // 设置处理器
-        TransNettyContext.setHandlers(handlers);
+        TransNettyContext.setServerHandlers(handlers);
 
         // 初始化
         init();
@@ -59,7 +59,7 @@ public class NettySocketServer implements SocketServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         //处理空闲状态事件的处理器
-                        TransNettyContext.setHandler(ch.pipeline());
+                        TransNettyContext.setHandlerServer(ch.pipeline());
                     }
                 });
 

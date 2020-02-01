@@ -4,6 +4,7 @@ import cn.dazhiyy.trans.netty.config.NettyConfig;
 import cn.dazhiyy.trans.netty.config.TransNettyProperties;
 import cn.dazhiyy.trans.netty.enums.ProtocolEnum;
 import cn.dazhiyy.trans.netty.handler.AbstractTransNetHandler;
+import cn.dazhiyy.trans.netty.handler.ClientJsonHandler;
 import cn.dazhiyy.trans.netty.handler.ServerJsonHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
@@ -29,10 +30,11 @@ import java.util.TreeSet;
 public class TransNettyContext {
 
     public static NettyConfig nettyConfig = new NettyConfig();
-    private static Set<AbstractTransNetHandler> handlers;
+    private static Set<AbstractTransNetHandler> serverHandlers;
+    private static Set<AbstractTransNetHandler> clientHandlers;
     private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public static void setHandler(ChannelPipeline pipeline) {
+    public static void setHandlerServer(ChannelPipeline pipeline) {
         String protocol = nettyConfig.get(TransNettyProperties.PROTOCOL);
         // JSON通信协议
         if (ProtocolEnum.JSON.name().equals(protocol)) {
@@ -42,21 +44,43 @@ public class TransNettyContext {
         }
     }
 
-    public static void setHandlers(List<AbstractTransNetHandler> handlers) {
-         TransNettyContext.handlers = new TreeSet<>(handlers);
+    public static void setHandlerClient(ChannelPipeline pipeline) {
+        String protocol = nettyConfig.get(TransNettyProperties.PROTOCOL);
+        // JSON通信协议
+        if (ProtocolEnum.JSON.name().equals(protocol)) {
+            pipeline.addLast(new StringEncoder());
+            pipeline.addLast(new StringDecoder());
+            pipeline.addLast(new ClientJsonHandler());
+        }
     }
 
-    public static Set<AbstractTransNetHandler> getHandlers(){
-        return handlers;
+    public static void setServerHandlers(List<AbstractTransNetHandler> handlers) {
+         TransNettyContext.serverHandlers = new TreeSet<>(handlers);
+    }
+
+    public static void setClientHandlers(List<AbstractTransNetHandler> handlers) {
+        TransNettyContext.clientHandlers = new TreeSet<>(handlers);
+    }
+
+    public static Set<AbstractTransNetHandler> getServerHandlers() {
+        return serverHandlers;
+    }
+    public static Set<AbstractTransNetHandler> getClientHandlers(){
+        return clientHandlers;
     }
 
     public static Boolean addChannel(Channel channel) {
         return channels.add(channel);
     }
 
+    public static Boolean removeChannel(Channel channel) {
+        return channels.remove(channel);
+    }
+
     public static Channel findChannel(ChannelId id){
         return channels.find(id);
     }
+
 
 
 }

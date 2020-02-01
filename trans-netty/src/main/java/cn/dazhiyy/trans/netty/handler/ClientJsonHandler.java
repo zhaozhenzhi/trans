@@ -9,12 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author dazhi
  * @projectName easy-trans
- * @packageName cn.dazhiyy.trans.server.transport.netty.handler
- * @className ServerHandler
+ * @packageName cn.dazhiyy.trans.netty.handler
+ * @className ClientJsonHandler
  * @description 序列号数据
- * @date 2019/3/30 18:45
+ * @date 2020/2/1 15:39
  */
-public class ServerJsonHandler extends SimpleChannelInboundHandler<String> {
+public class ClientJsonHandler extends SimpleChannelInboundHandler<String> {
 
     private TransNetHandlerManager transNetHandlerManager = new TransNetHandlerManager();
 
@@ -23,9 +23,15 @@ public class ServerJsonHandler extends SimpleChannelInboundHandler<String> {
         if (StringUtils.isNotBlank(msg)) {
             SerializaDataDTO serializaDataDTO = transNetHandlerManager.serializaJsonData(msg, ctx.channel().id());
             if (serializaDataDTO != null) {
-                transNetHandlerManager.handlerServerData(serializaDataDTO);
+                transNetHandlerManager.handlerClientData(serializaDataDTO);
             }
         }
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        // 通道活跃后,需要做的事
+        transNetHandlerManager.activeClientData(ctx.channel().id());
     }
 
     /**
@@ -39,5 +45,5 @@ public class ServerJsonHandler extends SimpleChannelInboundHandler<String> {
         super.channelRegistered(ctx);
         transNetHandlerManager.registered(ctx.channel());
     }
-}
 
+}

@@ -41,7 +41,7 @@ public class ServerHandler extends TransNetHandlerAdapter {
 
     private void handler(SerializaDataDTO transportSerializaDTO){
         for (MsgRouter router : routers) {
-            if (router.isSupport(transportSerializaDTO.getCode())){
+            if (router.isSupport(transportSerializaDTO.getBehaviorCode())){
                 Object data = transportSerializaDTO.getData();
                 // TODO 可以加一层日志记录，记录注册次数
                 if (data!=null) {

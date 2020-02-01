@@ -16,6 +16,10 @@
             <groupId>cn.dazhiyy.middleware</groupId>
             <artifactId>trans-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.dazhiyy.middleware</groupId>
+            <artifactId>easy-trans-netty</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

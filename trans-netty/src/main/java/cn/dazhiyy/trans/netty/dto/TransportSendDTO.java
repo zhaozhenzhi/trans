@@ -11,22 +11,13 @@ import lombok.Data;
  * @date 2020/1/31 20:40
  */
 @Data
-public class TransportSerializaDTO {
+public class TransportSendDTO extends BaseDTO {
 
-    /** 协议 */
-    private String protocol;
+    /** 行为码 */
+    private Integer behaviorCode;
 
-    /** IP地址*/
-    private String ip;
-
-    /** 时间戳 */
-    private Long timestamp;
-
-    /** 状态码 */
-    private Integer code;
-
-    /** 状态码解释 */
-    private String msg;
+    /** 行为码解释 */
+    private String behaviorMsg;
 
     /** 数据建议是JSON格式 */
     private Object data;

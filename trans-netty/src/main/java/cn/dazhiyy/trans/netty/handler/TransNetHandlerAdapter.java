@@ -1,6 +1,7 @@
 package cn.dazhiyy.trans.netty.handler;
 
 import cn.dazhiyy.trans.netty.dto.SerializaDataDTO;
+import io.netty.channel.ChannelId;
 
 
 /**
@@ -16,5 +17,10 @@ public class TransNetHandlerAdapter extends AbstractTransNetHandler {
     @Override
     public Boolean doHandler(SerializaDataDTO transportSerializaDTO) {
         return Boolean.FALSE;
+    }
+
+    @Override
+    public void activeClient(ChannelId channelId) {
+
     }
 }

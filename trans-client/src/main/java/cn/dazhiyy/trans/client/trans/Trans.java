@@ -7,12 +7,14 @@ import cn.dazhiyy.trans.client.trans.template.DbBean;
 import cn.dazhiyy.trans.client.trans.template.Operate;
 import cn.dazhiyy.trans.client.trans.template.Table;
 import cn.dazhiyy.trans.client.trans.template.TransListenerConfig;
-import cn.dazhiyy.trans.client.trans.transport.netty.NettySocketClient;
+import cn.dazhiyy.trans.client.trans.transport.netty.ClientHandler;
 import cn.dazhiyy.trans.common.bean.TransDb;
 import cn.dazhiyy.trans.common.bean.TransDbBean;
 import cn.dazhiyy.trans.common.bean.TransDbConn;
 import cn.dazhiyy.trans.common.bean.TransTable;
 import cn.dazhiyy.trans.common.enums.OpType;
+import cn.dazhiyy.trans.netty.NettySocketClient;
+import cn.dazhiyy.trans.netty.handler.AbstractTransNetHandler;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.Data;
@@ -41,6 +43,8 @@ public class Trans {
     private TransDbConn transDbConn = new TransDbConn();
 
     private NettySocketClient client;
+
+
 
     public Trans(TransListenerConfig config){
         this.config = config;
@@ -130,10 +134,14 @@ public class Trans {
     }
 
 
-    public void start(String ip,Integer port) throws InterruptedException {
-        client = new NettySocketClient();
-        client.setTransDbConn(buildTransDbBean(config));
-        client.connection(ip,port);
+    public void start(String ip, Integer port) throws InterruptedException {
+        List<AbstractTransNetHandler> clientHandlers = Lists.newArrayList();
+        ClientHandler clientHandler = new ClientHandler();
+        clientHandler.setTransDbConn(buildTransDbBean(config));
+        clientHandlers.add(clientHandler);
+        client = new NettySocketClient(clientHandlers);
+
+        client.connection(ip, port);
     }
 
 

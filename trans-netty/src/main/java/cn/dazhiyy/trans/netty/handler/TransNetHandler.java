@@ -1,6 +1,7 @@
 package cn.dazhiyy.trans.netty.handler;
 
 import cn.dazhiyy.trans.netty.dto.SerializaDataDTO;
+import io.netty.channel.ChannelId;
 
 /**
  * @author dazhi
@@ -20,5 +21,11 @@ interface TransNetHandler {
      */
     Boolean doHandler(SerializaDataDTO transportSerializaDTO);
 
+    /**
+     * 通道活跃后,回调
+     *
+     * @param channelId
+     */
+    void activeClient(ChannelId channelId);
 
 }
